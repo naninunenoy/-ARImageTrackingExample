@@ -5,6 +5,9 @@
   },
   "resources" : [
     {
+      "filename" : "caloriemate.arreferenceimage"
+    },
+    {
       "filename" : "lena.arreferenceimage"
     }
   ]
