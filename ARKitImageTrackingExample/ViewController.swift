@@ -12,6 +12,7 @@ import ARKit
 
 class ViewController: UIViewController, ARSCNViewDelegate {
     @IBOutlet var sceneView: ARSCNView!
+    @IBOutlet var text: UITextView!
     //AR Resourcesに目的の画像が埋め込まれている
     let referenceImages = ARReferenceImage.referenceImages(inGroupNamed: "AR Resources", bundle: Bundle.main)
     
@@ -44,5 +45,23 @@ class ViewController: UIViewController, ARSCNViewDelegate {
             node.addChildNode(planeNode)
         }
         return node
+    }
+    
+    func renderer(_ renderer: SCNSceneRenderer, didUpdate node: SCNNode, for anchor: ARAnchor) {
+        let worldPosStr = "world position: (\(node.worldPosition.x.str2)m \(node.worldPosition.y.str2)m \(node.worldPosition.z.str2)m)"
+        let rotStr = "rotation: (\(node.eulerAngles.x.rad2deg.str2)° \(node.eulerAngles.y.rad2deg.str2)° \(node.eulerAngles.z.rad2deg.str2)°)"
+        let cameraPos = SCNVector3ToGLKVector3((sceneView.pointOfView?.worldPosition)!)
+        let nodePos = SCNVector3ToGLKVector3(node.worldPosition)
+        let distanceStr = "distance from camera: \(GLKVector3Distance(cameraPos, nodePos).str2)m"
+        text.text = "\(worldPosStr)\n\(rotStr)\n\(distanceStr)"
+    }
+}
+
+extension Float {
+    var str2 : String {
+        return String(format: "%.2f", self)
+    }
+    var rad2deg : Float {
+        return self * 64.6972;
     }
 }
