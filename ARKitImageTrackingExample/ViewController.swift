@@ -15,8 +15,6 @@ class ViewController: UIViewController, ARSCNViewDelegate {
     @IBOutlet weak var text: UITextView!
     @IBOutlet weak var button: UIButton!
     
-    var firstPos: SCNVector3?
-    var currentPos: SCNVector3?
     //AR Resourcesに目的の画像が埋め込まれている
     let referenceImages = ARReferenceImage.referenceImages(inGroupNamed: "AR Resources", bundle: Bundle.main)
     
@@ -56,34 +54,36 @@ class ViewController: UIViewController, ARSCNViewDelegate {
         return node
     }
     
+    var currentPos: SCNVector3?
     func renderer(_ renderer: SCNSceneRenderer, didUpdate node: SCNNode, for anchor: ARAnchor) {
         let nPos = node.worldPosition // position of node releated by camera(iPhone)
         let nRot = node.eulerAngles
         let cPos = (sceneView.pointOfView?.worldPosition)! // position of camera(iPhone) = (0,0,0)
-        nodePositionUpdate(pos: nPos)
         let worldPosStr = "node position: (\(nPos.x.prec2)m \(nPos.y.prec2)m \(nPos.z.prec2)m)"
         let rotStr = "rotation: (\(nRot.x.rad2deg.prec2)° \(nRot.y.rad2deg.prec2)° \(nRot.z.rad2deg.prec2)°)"
         let cameraPosStr = "camera position: (\(cPos.x.prec2)m \(cPos.y.prec2)m \(cPos.z.prec2)m)"
         let distanceStr = "distance from camera: \(calcScenePositionDistance(cPos, nPos).prec2)m"
-        let moveLenStr = "moved distance: \(calcScenePositionDistance(firstPos!, currentPos!).prec2)m"
-        text.text = "\(worldPosStr)\n\(rotStr)\n\(cameraPosStr)\n\(distanceStr)\n\(moveLenStr)"
+        text.text = "\(worldPosStr)\n\(rotStr)\n\(cameraPosStr)\n\(distanceStr))"
+        currentPos = nPos
     }
     
-    private func nodePositionUpdate(pos: SCNVector3) {
-        if (currentPos == nil) {
-            firstPos = pos
-            currentPos = pos
-        } else {
-            // 一定以上の動きで更新
-            let moveLen = calcScenePositionDistance(currentPos!, pos)
-            if (moveLen > 0.02) {
-                currentPos = pos
+    var firstPos: SCNVector3?
+    var secondPos: SCNVector3?
+    @objc private func tapButton() {
+        if (currentPos != nil) {
+            if (firstPos == nil) {
+                firstPos = currentPos
+                button.setTitle("Set Destination", for: .normal)
+            } else if (secondPos == nil) {
+                secondPos = currentPos
+                let dist = calcScenePositionDistance(firstPos!, secondPos!)
+                button.setTitle("moved \(dist)m", for: .normal)
+            } else {
+                firstPos = nil
+                secondPos = nil
+                button.setTitle("Set Start Position", for: .normal)
             }
         }
-    }
-    
-    @objc private func tapButton() {
-        print("tap")
     }
     
     private func calcScenePositionDistance(_ posA: SCNVector3, _ posB: SCNVector3) -> Float {
