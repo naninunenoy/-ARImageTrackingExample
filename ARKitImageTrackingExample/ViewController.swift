@@ -50,13 +50,14 @@ class ViewController: UIViewController, ARSCNViewDelegate {
     }
     
     func renderer(_ renderer: SCNSceneRenderer, didUpdate node: SCNNode, for anchor: ARAnchor) {
-        nodePositionUpdate(pos: node.worldPosition)
-        let worldPosStr = "world position: (\(node.worldPosition.x.str2)m \(node.worldPosition.y.str2)m \(node.worldPosition.z.str2)m)"
-        let rotStr = "rotation: (\(node.eulerAngles.x.rad2deg.str2)° \(node.eulerAngles.y.rad2deg.str2)° \(node.eulerAngles.z.rad2deg.str2)°)"
-        let cameraPos = SCNVector3ToGLKVector3((sceneView.pointOfView?.worldPosition)!)
-        let nodePos = SCNVector3ToGLKVector3(node.worldPosition)
-        let distanceStr = "distance from camera: \(GLKVector3Distance(cameraPos, nodePos).str2)m"
-        let moveLenStr = "moved distance: \(GLKVector3Distance(SCNVector3ToGLKVector3(currentPos!), SCNVector3ToGLKVector3(firstPos!)).str2)m"
+        let nPos = node.worldPosition // world position of node
+        let nRot = node.eulerAngles // world position of camera(iPhone)
+        let cPos = sceneView.pointOfView?.worldPosition
+        nodePositionUpdate(pos: nPos)
+        let worldPosStr = "world position: (\(nPos.x.prec2)m \(nPos.y.prec2)m \(nPos.z.prec2)m)"
+        let rotStr = "rotation: (\(nRot.x.rad2deg.prec2)° \(nRot.y.rad2deg.prec2)° \(nRot.z.rad2deg.prec2)°)"
+        let distanceStr = "distance from camera: \(calcScenePositionDistance(cPos!, nPos).prec2)m"
+        let moveLenStr = "moved distance: \(calcScenePositionDistance(cPos!, nPos).prec2)m"
         text.text = "\(worldPosStr)\n\(rotStr)\n\(distanceStr)\n\(moveLenStr)"
     }
     
@@ -66,16 +67,20 @@ class ViewController: UIViewController, ARSCNViewDelegate {
             currentPos = pos
         } else {
             // 一定以上の動きで更新
-            let moveLen = GLKVector3Distance(SCNVector3ToGLKVector3(currentPos!), SCNVector3ToGLKVector3(pos))
+            let moveLen = calcScenePositionDistance(currentPos!, pos)
             if (moveLen > 0.02) {
                 currentPos = pos
             }
         }
     }
+    
+    private func calcScenePositionDistance(_ posA: SCNVector3, _ posB: SCNVector3) -> Float {
+        return GLKVector3Distance(SCNVector3ToGLKVector3(posA), SCNVector3ToGLKVector3(posB))
+    }
 }
 
 extension Float {
-    var str2 : String {
+    var prec2 : String {
         return String(format: "%.2f", self)
     }
     var rad2deg : Float {
