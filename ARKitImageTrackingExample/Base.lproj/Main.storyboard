@@ -22,7 +22,7 @@
                                 <autoresizingMask key="autoresizingMask"/>
                             </arscnView>
                             <view contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="0oW-5y-rna">
-                                <rect key="frame" x="0.0" y="713" width="414" height="92"/>
+                                <rect key="frame" x="0.0" y="677" width="414" height="128"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                                 <subviews>
                                     <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" fixedFrame="YES" text="Search Images..." textAlignment="natural" translatesAutoresizingMaskIntoConstraints="NO" id="PJT-v1-Je2">

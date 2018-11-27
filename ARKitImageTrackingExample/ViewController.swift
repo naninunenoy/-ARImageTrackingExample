@@ -22,6 +22,7 @@ class ViewController: UIViewController, ARSCNViewDelegate {
         super.viewDidLoad()
         //ARSCNViewDelegateを受け取れるようにする
         sceneView.delegate = self
+        sceneView.debugOptions = .showFeaturePoints
         let scene = SCNScene()
         sceneView.scene = scene
     }
@@ -29,8 +30,8 @@ class ViewController: UIViewController, ARSCNViewDelegate {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         //ARImageTrackingConfigurationに目的の画像を設定
-        let configuration = ARImageTrackingConfiguration()
-        configuration.trackingImages = referenceImages!
+        let configuration = ARWorldTrackingConfiguration()
+        configuration.detectionImages = referenceImages!
         sceneView.session.run(configuration)
     }
     
@@ -50,15 +51,16 @@ class ViewController: UIViewController, ARSCNViewDelegate {
     }
     
     func renderer(_ renderer: SCNSceneRenderer, didUpdate node: SCNNode, for anchor: ARAnchor) {
-        let nPos = node.worldPosition // world position of node
-        let nRot = node.eulerAngles // world position of camera(iPhone)
-        let cPos = sceneView.pointOfView?.worldPosition
+        let nPos = node.worldPosition // position of node releated by camera(iPhone)
+        let nRot = node.eulerAngles
+        let cPos = (sceneView.pointOfView?.worldPosition)! // position of camera(iPhone) = (0,0,0)
         nodePositionUpdate(pos: nPos)
-        let worldPosStr = "world position: (\(nPos.x.prec2)m \(nPos.y.prec2)m \(nPos.z.prec2)m)"
+        let worldPosStr = "node position: (\(nPos.x.prec2)m \(nPos.y.prec2)m \(nPos.z.prec2)m)"
         let rotStr = "rotation: (\(nRot.x.rad2deg.prec2)° \(nRot.y.rad2deg.prec2)° \(nRot.z.rad2deg.prec2)°)"
-        let distanceStr = "distance from camera: \(calcScenePositionDistance(cPos!, nPos).prec2)m"
-        let moveLenStr = "moved distance: \(calcScenePositionDistance(cPos!, nPos).prec2)m"
-        text.text = "\(worldPosStr)\n\(rotStr)\n\(distanceStr)\n\(moveLenStr)"
+        let cameraPosStr = "camera position: (\(cPos.x.prec2)m \(cPos.y.prec2)m \(cPos.z.prec2)m)"
+        let distanceStr = "distance from camera: \(calcScenePositionDistance(cPos, nPos).prec2)m"
+        let moveLenStr = "moved distance: \(calcScenePositionDistance(firstPos!, currentPos!).prec2)m"
+        text.text = "\(worldPosStr)\n\(rotStr)\n\(cameraPosStr)\n\(distanceStr)\n\(moveLenStr)"
     }
     
     private func nodePositionUpdate(pos: SCNVector3) {
