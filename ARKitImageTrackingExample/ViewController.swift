@@ -11,8 +11,10 @@ import SceneKit
 import ARKit
 
 class ViewController: UIViewController, ARSCNViewDelegate {
-    @IBOutlet var sceneView: ARSCNView!
-    @IBOutlet var text: UITextView!
+    @IBOutlet weak var sceneView: ARSCNView!
+    @IBOutlet weak var text: UITextView!
+    @IBOutlet weak var button: UIButton!
+    
     var firstPos: SCNVector3?
     var currentPos: SCNVector3?
     //AR Resourcesに目的の画像が埋め込まれている
@@ -20,6 +22,8 @@ class ViewController: UIViewController, ARSCNViewDelegate {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        // buttonのイベント
+        button.addTarget(self, action: #selector(self.tapButton), for: .touchDown)
         //ARSCNViewDelegateを受け取れるようにする
         sceneView.delegate = self
         let scene = SCNScene()
@@ -76,6 +80,10 @@ class ViewController: UIViewController, ARSCNViewDelegate {
                 currentPos = pos
             }
         }
+    }
+    
+    @objc private func tapButton() {
+        print("tap")
     }
     
     private func calcScenePositionDistance(_ posA: SCNVector3, _ posB: SCNVector3) -> Float {
