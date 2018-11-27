@@ -22,16 +22,18 @@ class ViewController: UIViewController, ARSCNViewDelegate {
         super.viewDidLoad()
         //ARSCNViewDelegateを受け取れるようにする
         sceneView.delegate = self
-        sceneView.debugOptions = .showFeaturePoints
         let scene = SCNScene()
         sceneView.scene = scene
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        //ARWorldTrackingConfigurationに目的の画像を設定
+        //let configuration = ARWorldTrackingConfiguration()
+        //configuration.detectionImages = referenceImages!
         //ARImageTrackingConfigurationに目的の画像を設定
-        let configuration = ARWorldTrackingConfiguration()
-        configuration.detectionImages = referenceImages!
+        let configuration = ARImageTrackingConfiguration()
+        configuration.trackingImages = referenceImages!
         sceneView.session.run(configuration)
     }
     
