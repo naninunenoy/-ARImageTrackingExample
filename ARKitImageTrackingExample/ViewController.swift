@@ -33,6 +33,7 @@ class ViewController: UIViewController, ARSCNViewDelegate {
         //ARWorldTrackingConfigurationに目的の画像を設定
         //let configuration = ARWorldTrackingConfiguration()
         //configuration.detectionImages = referenceImages!
+        //sceneView.debugOptions = .showFeaturePoints
         //ARImageTrackingConfigurationに目的の画像を設定
         let configuration = ARImageTrackingConfiguration()
         configuration.trackingImages = referenceImages!
@@ -40,18 +41,17 @@ class ViewController: UIViewController, ARSCNViewDelegate {
     }
     
     // ARSCNViewDelegate
-    
+    var arNode = SCNNode()
     func renderer(_ renderer: SCNSceneRenderer, nodeFor anchor: ARAnchor) -> SCNNode? {
-        let node = SCNNode()
         if let imageAnchor = anchor as? ARImageAnchor {
             // 目的の画像を青い面をかぶせる
             let plane = SCNPlane(width: imageAnchor.referenceImage.physicalSize.width, height: imageAnchor.referenceImage.physicalSize.height)
             plane.firstMaterial?.diffuse.contents = UIColor.blue.withAlphaComponent(0.85)
             let planeNode = SCNNode(geometry: plane)
             planeNode.eulerAngles.x = -.pi / 2
-            node.addChildNode(planeNode)
+            arNode.addChildNode(planeNode)
         }
-        return node
+        return arNode
     }
     
     var currentPos: SCNVector3?
